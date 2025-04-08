@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import stockOptions from "./stockList";
@@ -11,13 +11,21 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Spinner from "./Spinner";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
-  const [symbol, setSymbol] = useState("");
+  const [symbol, setSymbol] = useState("SBIN.NS");
   const [data, setData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [comparisonData, setComparisonData] = useState([]);
+  const [predictionDate, setPredictionDate] = useState(new Date());
+
+  const formattedDate = predictionDate.toISOString().split("T")[0]; // 'yyyy-mm-dd'
 
   const handlePredict = async () => {
     if (!symbol) return alert("Please select a stock!");
@@ -34,38 +42,69 @@ function App() {
       );
       setHistoryData(historyRes.data);
 
+      // const predictionResByDate = await axios.get(
+      //   `https://stock-predictor-backend-4tp3.onrender.com/predict?stock=${symbol}&date=${formattedDate}`
+      // );
+      // console.log("hello there", predictionResByDate.data);
+
       const comparisonRes = await axios.get(
         `https://stock-predictor-backend-4tp3.onrender.com/get-comparisons?stock=${symbol}`
       );
       setComparisonData(comparisonRes.data);
+      toast.success("Prediction loaded successfully!");
     } catch (err) {
       console.error(err);
+      toast.error("Something went wrong while fetching data.");
+
       // alert("Error fetching data. Please try again.");
     }
     setLoading(false);
   };
 
+  // Call on startup and whenever symbol changes
+  useEffect(() => {
+    if (symbol) {
+      handlePredict();
+    }
+  }, [symbol]);
+
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h2>📊 Nifty Stock Price Predictor</h2>
 
+      {/* <div style={{ marginBottom: "1rem" }}>
+        <label style={{ marginRight: "1rem" }}>Choose date: </label>
+        <DatePicker
+          selected={predictionDate}
+          onChange={(date) => setPredictionDate(date)}
+          dateFormat="yyyy-MM-dd"
+          minDate={new Date()}
+        />
+      </div> */}
+
       <div style={{ maxWidth: 400, marginBottom: "1rem" }}>
         <Select
           options={stockOptions}
+          defaultValue={stockOptions.find(
+            (option) => option.value === "SBIN.NS"
+          )}
           onChange={(selected) => setSymbol(selected.value)}
           placeholder="Select a company..."
           isSearchable
         />
       </div>
 
-      <button
+      {/* <button
         onClick={handlePredict}
         style={{ padding: "0.5rem 1rem", fontSize: "1rem" }}
+        disabled={loading}
       >
         {loading ? "Predicting..." : "Predict"}
-      </button>
+      </button> */}
 
-      {data.length > 0 && (
+      {loading && <Spinner />}
+
+      {!loading && data.length > 0 && (
         <>
           <div style={{ marginTop: "3rem" }}>
             <h3>📈 Next 7 Days Forecast</h3>
@@ -82,7 +121,6 @@ function App() {
                   strokeWidth={2}
                   name="Predicted Price"
                 />
-                {/* Lower bound */}
                 <Line
                   type="monotone"
                   dataKey="yhat_lower"
@@ -91,7 +129,6 @@ function App() {
                   strokeWidth={1}
                   name="Lower Bound"
                 />
-                {/* Upper bound */}
                 <Line
                   type="monotone"
                   dataKey="yhat_upper"
@@ -124,7 +161,7 @@ function App() {
         </>
       )}
 
-      {comparisonData.length > 0 && (
+      {!loading && comparisonData.length > 0 && (
         <div style={{ marginTop: "3rem" }}>
           <h3>✅ Prediction Accuracy</h3>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -151,6 +188,7 @@ function App() {
           </table>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
