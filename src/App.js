@@ -14,7 +14,7 @@ import {
 import Spinner from "./Spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
@@ -23,22 +23,25 @@ function App() {
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [comparisonData, setComparisonData] = useState([]);
-  const [predictionDate, setPredictionDate] = useState(new Date());
+  // const [predictionDate, setPredictionDate] = useState(new Date());
 
-  const formattedDate = predictionDate.toISOString().split("T")[0]; // 'yyyy-mm-dd'
+  // const formattedDate = predictionDate.toISOString().split("T")[0]; // 'yyyy-mm-dd'
 
+
+  console.log("symbol", symbol);
+  
   const handlePredict = async () => {
     if (!symbol) return alert("Please select a stock!");
 
     setLoading(true);
     try {
       const predictionRes = await axios.get(
-        `https://stock-predictor-backend-4tp3.onrender.com/predict?stock=${symbol}`
+        `https://stock-predictor-backend-4tp3.onrender.com/predict?stock=${symbol.value}`
       );
       setData(predictionRes.data);
 
       const historyRes = await axios.get(
-        `https://stock-predictor-backend-4tp3.onrender.com/history?stock=${symbol}&range=1y`
+        `https://stock-predictor-backend-4tp3.onrender.com/history?stock=${symbol.value}&range=1y`
       );
       setHistoryData(historyRes.data);
 
@@ -48,7 +51,7 @@ function App() {
       // console.log("hello there", predictionResByDate.data);
 
       const comparisonRes = await axios.get(
-        `https://stock-predictor-backend-4tp3.onrender.com/get-comparisons?stock=${symbol}`
+        `https://stock-predictor-backend-4tp3.onrender.com/get-comparisons?stock=${symbol.value}`
       );
       setComparisonData(comparisonRes.data);
       toast.success("Prediction loaded successfully!");
@@ -82,13 +85,15 @@ function App() {
         />
       </div> */}
 
+
+
       <div style={{ maxWidth: 400, marginBottom: "1rem" }}>
         <Select
           options={stockOptions}
           defaultValue={stockOptions.find(
             (option) => option.value === "SBIN.NS"
           )}
-          onChange={(selected) => setSymbol(selected.value)}
+          onChange={(selected) => setSymbol(selected)}
           placeholder="Select a company..."
           isSearchable
         />
@@ -104,9 +109,13 @@ function App() {
 
       {loading && <Spinner />}
 
+
       {!loading && data.length > 0 && (
         <>
+
           <div style={{ marginTop: "3rem" }}>
+          <h2>{symbol.label}</h2>
+
             <h3>📈 Next 7 Days Forecast</h3>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={data}>
