@@ -80,6 +80,25 @@ function App() {
                   dataKey="yhat"
                   stroke="#007bff"
                   strokeWidth={2}
+                  name="Predicted Price"
+                />
+                {/* Lower bound */}
+                <Line
+                  type="monotone"
+                  dataKey="yhat_lower"
+                  stroke="#ff6961"
+                  strokeDasharray="5 5"
+                  strokeWidth={1}
+                  name="Lower Bound"
+                />
+                {/* Upper bound */}
+                <Line
+                  type="monotone"
+                  dataKey="yhat_upper"
+                  stroke="#77dd77"
+                  strokeDasharray="5 5"
+                  strokeWidth={1}
+                  name="Upper Bound"
                 />
               </LineChart>
             </ResponsiveContainer>
