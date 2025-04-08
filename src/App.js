@@ -40,7 +40,7 @@ function App() {
       setComparisonData(comparisonRes.data);
     } catch (err) {
       console.error(err);
-      alert("Error fetching data. Please try again.");
+      // alert("Error fetching data. Please try again.");
     }
     setLoading(false);
   };
