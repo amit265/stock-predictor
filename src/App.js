@@ -116,7 +116,35 @@ function App() {
           <div style={{ marginTop: "3rem" }}>
           <h2>{symbol.label}</h2>
 
-            <h3>📈 Next 7 Days Forecast</h3>
+          {!loading && comparisonData.length > 0 && (
+        <div style={{ marginTop: "3rem" }}>
+          <h3>✅ Prediction Accuracy</h3>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#f0f0f0" }}>
+                <th style={th}>Date</th>
+                <th style={th}>Predicted</th>
+                <th style={th}>Actual</th>
+                <th style={th}>Error</th>
+                <th style={th}>Accuracy (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonData.map((row, idx) => (
+                <tr key={idx}>
+                  <td style={td}>{row.target_date}</td>
+                  <td style={td}>₹{row.predicted_price}</td>
+                  <td style={td}>₹{row.actual_price}</td>
+                  <td style={td}>₹{row.error}</td>
+                  <td style={td}>{row.accuracy_percent}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+            <h3 style={{ marginTop: "3rem" }}>📈 Next 7 Days Forecast</h3>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -170,33 +198,7 @@ function App() {
         </>
       )}
 
-      {!loading && comparisonData.length > 0 && (
-        <div style={{ marginTop: "3rem" }}>
-          <h3>✅ Prediction Accuracy</h3>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "#f0f0f0" }}>
-                <th style={th}>Date</th>
-                <th style={th}>Predicted</th>
-                <th style={th}>Actual</th>
-                <th style={th}>Error</th>
-                <th style={th}>Accuracy (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonData.map((row, idx) => (
-                <tr key={idx}>
-                  <td style={td}>{row.target_date}</td>
-                  <td style={td}>₹{row.predicted_price}</td>
-                  <td style={td}>₹{row.actual_price}</td>
-                  <td style={td}>₹{row.error}</td>
-                  <td style={td}>{row.accuracy_percent}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+    
       <ToastContainer />
     </div>
   );
