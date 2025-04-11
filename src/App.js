@@ -18,6 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
+  const [hidePrediction, setHidePrediction] = useState(false);
   const [symbol, setSymbol] = useState("");
   const [data, setData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
@@ -27,14 +28,11 @@ function App() {
 
   // const formattedDate = predictionDate.toISOString().split("T")[0]; // 'yyyy-mm-dd'
 
-
   // console.log("symbol", symbol);
 
   console.log("data", data);
   console.log("sethistorydata", historyData);
-  
-  
-  
+
   const handlePredict = async () => {
     if (!symbol) return alert("Please select a stock!");
 
@@ -76,6 +74,10 @@ function App() {
     }
   }, [symbol]);
 
+
+
+  console.log(hidePrediction);
+  
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h2>📊 Nifty Stock Price Predictor</h2>
@@ -89,8 +91,6 @@ function App() {
           minDate={new Date()}
         />
       </div> */}
-
-
 
       <div style={{ maxWidth: 400, marginBottom: "1rem" }}>
         <Select
@@ -114,71 +114,73 @@ function App() {
 
       {loading && <Spinner />}
 
-
       {!loading && data.length > 0 && (
         <>
-
           <div style={{ marginTop: "3rem" }}>
-          <h2>{symbol.label}</h2>
+            <h2>{symbol.label}</h2>
 
-          {!loading && comparisonData.length > 0 && (
+            {!loading && comparisonData.length > 0 && (
+              <div style={{ marginTop: "3rem" }}>
+                <h3
+                  onClick={() => {
+                    setHidePrediction(!hidePrediction);
+                  }}
+                  style={{ backgroundColor: "blue", color: "white", paddingTop: 10, paddingBottom: 10 }}
+                >
+                  ✅ Prediction Accuracy
+                </h3>
+                {hidePrediction && (
+                  <table style={{ width: "100%", borderCollapse: "collapse", }}>
+                    <thead>
+                      <tr style={{ background: "#f0f0f0" }}>
+                        <th style={th}>Date</th>
+                        <th style={th}>Predicted</th>
+                        <th style={th}>Actual</th>
+                        <th style={th}>Error</th>
+                        <th style={th}>Accuracy (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {comparisonData.map((row, idx) => (
+                        <tr key={idx}>
+                          <td style={td}>{row.target_date}</td>
+                          <td style={td}>₹{row.predicted_price}</td>
+                          <td style={td}>₹{row.actual_price}</td>
+                          <td style={td}>₹{row.error}</td>
+                          <td style={td}>{row.accuracy_percent}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
 
-        <div style={{ marginTop: "3rem" }}>
-          <h3>✅ Prediction Accuracy</h3>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "#f0f0f0" }}>
-                <th style={th}>Date</th>
-                <th style={th}>Predicted</th>
-                <th style={th}>Actual</th>
-                <th style={th}>Error</th>
-                <th style={th}>Accuracy (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comparisonData.map((row, idx) => (
-                <tr key={idx}>
-                  <td style={td}>{row.target_date}</td>
-                  <td style={td}>₹{row.predicted_price}</td>
-                  <td style={td}>₹{row.actual_price}</td>
-                  <td style={td}>₹{row.error}</td>
-                  <td style={td}>{row.accuracy_percent}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-{!loading && comparisonData.length > 0 && (
-            
-            <div style={{ marginTop: "3rem" }}>
-              <h3>💡 Next 7 Days Forecast</h3>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ background: "#f0f0f0" }}>
-                    <th style={th}>Date</th>
-                    <th style={th}>Lower Bound</th>
-                    <th style={th}>Upper Bound</th>
-                    <th style={th}>Predicted Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row, idx) => (
-                    <tr key={idx}>
-                      <td style={td}>{row.ds}</td>
-                      <td style={td}>₹{row.yhat_lower}</td>
-                      <td style={td}>₹{row.yhat_upper}</td>
-                      <td style={td}>₹{row.yhat}</td>
+            {!loading && comparisonData.length > 0 && (
+              <div style={{ marginTop: "3rem" }}>
+                <h3>💡 Next 7 Days Forecast</h3>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "#f0f0f0" }}>
+                      <th style={th}>Date</th>
+                      <th style={th}>Lower Bound</th>
+                      <th style={th}>Upper Bound</th>
+                      <th style={th}>Predicted Price</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-
-
+                  </thead>
+                  <tbody>
+                    {data.map((row, idx) => (
+                      <tr key={idx}>
+                        <td style={td}>{row.ds}</td>
+                        <td style={td}>₹{row.yhat_lower}</td>
+                        <td style={td}>₹{row.yhat_upper}</td>
+                        <td style={td}>₹{row.yhat}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <h3 style={{ marginTop: "3rem" }}>📈 Next 7 Days Forecast</h3>
             <ResponsiveContainer width="100%" height={400}>
@@ -234,7 +236,6 @@ function App() {
         </>
       )}
 
-    
       <ToastContainer />
     </div>
   );
