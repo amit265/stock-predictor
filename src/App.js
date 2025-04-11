@@ -29,6 +29,11 @@ function App() {
 
 
   // console.log("symbol", symbol);
+
+  console.log("data", data);
+  console.log("sethistorydata", historyData);
+  
+  
   
   const handlePredict = async () => {
     if (!symbol) return alert("Please select a stock!");
@@ -117,6 +122,7 @@ function App() {
           <h2>{symbol.label}</h2>
 
           {!loading && comparisonData.length > 0 && (
+
         <div style={{ marginTop: "3rem" }}>
           <h3>✅ Prediction Accuracy</h3>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -143,6 +149,36 @@ function App() {
           </table>
         </div>
       )}
+
+{!loading && comparisonData.length > 0 && (
+            
+            <div style={{ marginTop: "3rem" }}>
+              <h3>💡 Next 7 Days Forecast</h3>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ background: "#f0f0f0" }}>
+                    <th style={th}>Date</th>
+                    <th style={th}>Lower Bound</th>
+                    <th style={th}>Upper Bound</th>
+                    <th style={th}>Predicted Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, idx) => (
+                    <tr key={idx}>
+                      <td style={td}>{row.ds}</td>
+                      <td style={td}>₹{row.yhat_lower}</td>
+                      <td style={td}>₹{row.yhat_upper}</td>
+                      <td style={td}>₹{row.yhat}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+
+
 
             <h3 style={{ marginTop: "3rem" }}>📈 Next 7 Days Forecast</h3>
             <ResponsiveContainer width="100%" height={400}>
