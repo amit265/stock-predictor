@@ -18,7 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
-  const [symbol, setSymbol] = useState("SBIN.NS");
+  const [symbol, setSymbol] = useState("");
   const [data, setData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ function App() {
   // const formattedDate = predictionDate.toISOString().split("T")[0]; // 'yyyy-mm-dd'
 
 
-  console.log("symbol", symbol);
+  // console.log("symbol", symbol);
   
   const handlePredict = async () => {
     if (!symbol) return alert("Please select a stock!");
@@ -90,9 +90,9 @@ function App() {
       <div style={{ maxWidth: 400, marginBottom: "1rem" }}>
         <Select
           options={stockOptions}
-          defaultValue={stockOptions.find(
-            (option) => option.value === "SBIN.NS"
-          )}
+          // defaultValue={stockOptions.find(
+          //   (option) => option.value === "SBIN.NS"
+          // )}
           onChange={(selected) => setSymbol(selected)}
           placeholder="Select a company..."
           isSearchable
