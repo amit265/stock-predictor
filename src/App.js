@@ -18,7 +18,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
-  const [hidePrediction, setHidePrediction] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showPrediction, setShowPrediction] = useState(false);
+  const [showForecast, setShowForecast] = useState(false);
   const [symbol, setSymbol] = useState("");
   const [data, setData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
@@ -74,10 +76,8 @@ function App() {
     }
   }, [symbol]);
 
+  console.log(historyData);
 
-
-  console.log(hidePrediction);
-  
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h2>📊 Nifty Stock Price Predictor</h2>
@@ -123,14 +123,32 @@ function App() {
               <div style={{ marginTop: "3rem" }}>
                 <h3
                   onClick={() => {
-                    setHidePrediction(!hidePrediction);
+                    setShowPrediction(!showPrediction);
+                    // setShowHistory(false);
+                    // setShowForecast(false);
+
                   }}
-                  style={{ backgroundColor: "blue", color: "white", paddingTop: 10, paddingBottom: 10 }}
+                  style={{
+                    backgroundColor: showPrediction ? "red" : "blue",
+                    color: "white",
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    cursor: "pointer",
+                    borderRadius: "5px",
+                    marginBottom: "1rem",
+                    paddingLeft: "1rem",
+                    paddingRight: "1rem",
+                    textAlign: "center",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    transition: "background-color 0.3s ease",
+                    //   textDecoration: "underline",
+                  }}
                 >
                   ✅ Prediction Accuracy
                 </h3>
-                {hidePrediction && (
-                  <table style={{ width: "100%", borderCollapse: "collapse", }}>
+                {showPrediction && (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#f0f0f0" }}>
                         <th style={th}>Date</th>
@@ -158,27 +176,103 @@ function App() {
 
             {!loading && comparisonData.length > 0 && (
               <div style={{ marginTop: "3rem" }}>
-                <h3>💡 Next 7 Days Forecast</h3>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#f0f0f0" }}>
-                      <th style={th}>Date</th>
-                      <th style={th}>Lower Bound</th>
-                      <th style={th}>Upper Bound</th>
-                      <th style={th}>Predicted Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((row, idx) => (
-                      <tr key={idx}>
-                        <td style={td}>{row.ds}</td>
-                        <td style={td}>₹{row.yhat_lower}</td>
-                        <td style={td}>₹{row.yhat_upper}</td>
-                        <td style={td}>₹{row.yhat}</td>
+                <h3
+                  onClick={() => {
+                    setShowForecast(!showForecast);
+                    // setShowHistory(false);
+                    // setShowPrediction(false);
+                  }}
+                  style={{
+                    backgroundColor: showForecast ? "red" : "blue",
+                    color: "white",
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    cursor: "pointer",
+                    borderRadius: "5px",
+                    marginBottom: "1rem",
+                    paddingLeft: "1rem",
+                    paddingRight: "1rem",
+                    textAlign: "center",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    transition: "background-color 0.3s ease",
+                  }}
+                >
+                  ✅ Next 7 Days Forecast
+                </h3>
+                {showForecast && (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#f0f0f0" }}>
+                        <th style={th}>Date</th>
+                        <th style={th}>Lower Bound</th>
+                        <th style={th}>Upper Bound</th>
+                        <th style={th}>Predicted Price</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.map((row, idx) => (
+                        <tr key={idx}>
+                          <td style={td}>{row.ds}</td>
+                          <td style={td}>₹{row.yhat_lower}</td>
+                          <td style={td}>₹{row.yhat_upper}</td>
+                          <td style={td}>₹{row.yhat}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            )}
+
+            {!loading && historyData.length > 0 && (
+              <div style={{ marginTop: "3rem" }}>
+                <h3
+                  onClick={() => {
+                    setShowHistory(!showHistory);
+                    // setShowForecast(false);
+                    // setShowPrediction(false);
+                  }}
+                  style={{
+                    // backgroundColor: "blue",
+                    backgroundColor: showHistory ? "red" : "blue",
+                    color: "white",
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    cursor: "pointer",
+                    borderRadius: "5px",
+                    marginBottom: "1rem",
+                    paddingLeft: "1rem",
+                    paddingRight: "1rem",
+                    textAlign: "center",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    transition: "background-color 0.3s ease",
+                  }}
+                >
+                  ✅ History last 30 days
+                </h3>
+                {showHistory && (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#f0f0f0" }}>
+                        <th style={th}>Date</th>
+                        <th style={th}>Close</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData
+                        .sort((a, b) => new Date(b.ds) - new Date(a.ds))
+                        .slice(0, 30)
+                        .map((row, idx) => (
+                          <tr key={idx}>
+                            <td style={td}>{row.ds}</td>
+                            <td style={td}>₹{row.close}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
 
